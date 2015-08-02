@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 
 import requests
-import ConfigParser
 import argparse
 from lxml import etree
 

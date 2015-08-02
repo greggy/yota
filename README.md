@@ -9,6 +9,11 @@ LOGIN = 'Your email'
 PASSWORD = 'Your password'
 ```
 
+## Dependencies
+ * python-requests
+ * python-argparse
+ * python-lxml
+
 ## How does it work?
 Get your current tariff:
 
