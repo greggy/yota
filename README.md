@@ -2,8 +2,14 @@
 
 Script to change yota tariff or show one (It shows tariff price not speed)
 
-## How does it work?
+## Configure
+Write your credintials in yota.py file:
+```
+LOGIN = 'Your email'
+PASSWORD = 'Your password'
+```
 
+## How does it work?
 Get your current tariff:
 
 ```
