@@ -11,7 +11,7 @@ Get your current tariff:
 Your tariff is 500
 ```
 
-Сhange current triff to 300:
+Сhange current tariff to 300:
 
 ```
 > ./yota.py -s 300
