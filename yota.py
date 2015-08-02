@@ -3,6 +3,7 @@
 import requests
 import ConfigParser
 import argparse
+from lxml import etree
 
 
 LOGIN = ''
@@ -57,27 +58,24 @@ def main():
 
     sess = requests.Session()
     r = auth_yota(sess)
-    output = r.text.split('\n')
-    product = ''
-    offerCode = ''
-    for line in output:
-        if 'name="product"' in line:
-            product = line.split()[3].split('=')[1]
-            product = int(product.replace('"', ''))
-        if 'name="offerCode"' in line:
-            offerCode = line.split()[3].split('=')[1]
-            offerCode = offerCode.replace('"', '')
 
-    if args.show:
-        if offerCode == '':
-            print 'Error. Offer code value is empty'
-
-        show_offer(offerCode)
+    try:
+        tree = etree.HTML(r.text)
+        product = tree.xpath('//div[contains(@id, "product_")]/form/input[1]')[0].get('value')
+        offerCode = tree.xpath('//div[contains(@id, "product_")]/form/input[2]')[0].get('value')
+    except: #FIXME
+        print 'Error. Something goes wrong'
     else:
-        if product == '':
-            print 'Error. Product value is empty'
+        if args.show:
+            if offerCode == '':
+                print 'Error. Offer code value is empty'
 
-        change_offer(sess, product, args.tariff)
+            show_offer(offerCode)
+        else:
+            if product == '':
+                print 'Error. Product value is empty'
+
+            change_offer(sess, product, args.tariff)
 
 
 
