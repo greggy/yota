@@ -53,6 +53,10 @@ def show_offer(offerCode):
 
 
 def main():
+    if LOGIN == '' or PASSWORD == '':
+        print 'Add your credintials in file yota.py'
+        return
+
     args = get_args()
 
     sess = requests.Session()
