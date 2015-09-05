@@ -45,16 +45,16 @@ def change_offer(sess, product, speed):
 def show_offer(offerCode):
     for key, value in TARIFF_CODES.iteritems():
         if value == offerCode:
-            print 'Your tariff is %s' % key
+            print('Your tariff is {0}').format(key)
             break
     else:
-        print 'Error. Yota nas not such tariff'
+        print('Error. Yota nas not such tariff')
     return
 
 
 def main():
     if LOGIN == '' or PASSWORD == '':
-        print 'Add your credintials in file yota.py'
+        print('Add your credintials in file yota.py')
         return
 
     args = get_args()
@@ -66,17 +66,21 @@ def main():
         tree = etree.HTML(r.text)
         product = tree.xpath('//div[contains(@id, "product_")]/form/input[1]')[0].get('value')
         offerCode = tree.xpath('//div[contains(@id, "product_")]/form/input[2]')[0].get('value')
-    except: #FIXME
-        print 'Error. Something goes wrong'
+    except IndexError as err:
+        print(err)
+        print('Error. Your tariff page was broken or changed')
+    except Exception as err:
+        print(err)
+        print('Error. Something goes wrong')
     else:
         if args.show:
             if offerCode == '':
-                print 'Error. Offer code value is empty'
+                print('Error. Offer code value is empty')
 
             show_offer(offerCode)
         else:
             if product == '':
-                print 'Error. Product value is empty'
+                print('Error. Product value is empty')
 
             change_offer(sess, product, args.tariff)
 
