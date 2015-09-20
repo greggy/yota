@@ -43,24 +43,19 @@ def change_offer(sess, product, speed):
     return result
 
 def show_offer(offerCode):
+    if LOGIN == '' or PASSWORD == '':
+        return 'Add your credintials in file yota.py'
+
+    ans = None
     for key, value in TARIFF_CODES.iteritems():
         if value == offerCode:
-            print('Your tariff is {0}').format(key)
-            break
+            return 'Your tariff is {0}'.format(key)
     else:
-        print('Error. Yota nas not such tariff')
-    return
+        return 'Error. Yota nas not such tariff'
 
-
-def main():
-    if LOGIN == '' or PASSWORD == '':
-        print('Add your credintials in file yota.py')
-        return
-
-    args = get_args()
-
-    sess = requests.Session()
+def get_result(sess, args):
     r = auth_yota(sess)
+    ans = None
 
     try:
         tree = etree.HTML(r.text)
@@ -68,22 +63,31 @@ def main():
         offerCode = tree.xpath('//div[contains(@id, "product_")]/form/input[2]')[0].get('value')
     except IndexError as err:
         print(err)
-        print('Error. Your tariff page was broken or changed')
+        ans = 'Error. Your tariff page was broken or changed'
     except Exception as err:
         print(err)
-        print('Error. Something goes wrong')
+        ans = 'Error. Something goes wrong'
     else:
         if args.show:
             if offerCode == '':
-                print('Error. Offer code value is empty')
+                ans = 'Error. Offer code value is empty'
 
-            show_offer(offerCode)
+            ans = show_offer(offerCode)
         else:
             if product == '':
-                print('Error. Product value is empty')
+                ans = 'Error. Product value is empty'
 
-            change_offer(sess, product, args.tariff)
+            rc = change_offer(sess, product, args.tariff)
+            ans = 'Error. Your tariff wasn\'t changed'
+            if rc.status_code == 200:
+                ans = 'Now your tariff is {0}'.format(args.tariff)
+    return ans
 
+
+def main():
+    args = get_args()
+    sess = requests.Session()
+    print(get_result(sess, args))
 
 
 if __name__ == '__main__':
