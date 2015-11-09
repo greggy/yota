@@ -17,6 +17,7 @@ def get_args():
     arg_parse = argparse.ArgumentParser(description='Script to change yota tariff or show one (It shows tariff price not speed)')
     arg_parse.add_argument('-t', '--tariff', dest='tariff', choices=AVAILABLE_SPEED, type=str, help='Tariff to set for yota in rubles')
     arg_parse.add_argument('-s', '--show', dest='show', action="store_true", help='Show the current tariff in rubles')
+    arg_parse.add_argument('-l', '--long', dest='long', action="store_true", help='Show how long your paid tariff will be available')
     args = arg_parse.parse_args()
     return args
 
@@ -61,6 +62,7 @@ def get_result(sess, args):
         tree = etree.HTML(r.text)
         product = tree.xpath('//div[contains(@id, "product_")]/form/input[1]')[0].get('value')
         offerCode = tree.xpath('//div[contains(@id, "product_")]/form/input[2]')[0].get('value')
+        longCode = tree.xpath('//div[contains(@class, "time")]/strong')[0].text
     except IndexError as err:
         print(err)
         ans = 'Error. Your tariff page was broken or changed'
@@ -73,6 +75,12 @@ def get_result(sess, args):
                 ans = 'Error. Offer code value is empty'
 
             ans = show_offer(offerCode)
+        elif args.long:
+            if longCode == '':
+                ans = 'Error. How long your tariff will be on code value is empty'
+
+            add = tree.xpath('//div[contains(@class, "time")]/span')[0].text
+            ans = u'Your tariff will be available {0} {1}'.format(longCode, add)
         else:
             if product == '':
                 ans = 'Error. Product value is empty'
